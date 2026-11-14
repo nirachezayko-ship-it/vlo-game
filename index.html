@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#090d16">
+<title>Ervilia & Uby - YumeID™</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<!-- 1. SPLASH SCREEN 1 -->
+<div class="screen-layer" id="splash1" style="cursor:pointer;">
+ <img class="splash1-bg" src="assets/splash.png" alt="" onerror="this.style.display='none'">
+ <div class="brand-logo">YumeID<span>™</span></div>
+</div>
+
+<!-- 2. SPLASH SCREEN 2 (TAP TO START) -->
+<div class="screen-layer hidden" id="splash2">
+ <img class="full-bg-img" src="assets/taptostarbg.png" alt="Tap To Start BG" onerror="this.src='assets/splash.png'">
+ <div class="splash2-vignette"></div>
+ <img class="screen-game-logo" src="assets/logo_taptostart.png" alt="Logo Game" onerror="this.style.display='none'">
+ <div class="tap-prompt">TAP TO PLAY</div>
+</div>
+
+<!-- 3. MENU UTAMA -->
+<div class="screen-layer hidden" id="mainMenu">
+ <img class="menu-bg-preview" src="assets/menubg.png" alt="Menu BG" onerror="this.src='assets/splash.png'">
+ <div class="menu-vignette"></div>
+ <img class="menu-game-logo" src="assets/logo_menuutama.png" alt="Logo Menu" onerror="this.style.display='none'">
+ <div class="game-subtitle">YumeID™ Life Sim Versi 0.1 Tester</div>
+ <div class="menu-buttons">
+  <button class="menu-btn primary" id="btnPlay">▶ Play Solo</button>
+  <button class="menu-btn online" id="btnOnlineMenu">🌐 Play Online (Co-op)</button>
+  <button class="menu-btn" id="btnSetting">⚙ Setting</button>
+  <button class="menu-btn" id="btnAbout">ℹ About Game</button>
+ </div>
+</div>
+
+<!-- POPUP MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+ <div class="modal-card">
+  <h3 id="modalTitle">Judul</h3>
+  <div id="modalBody"></div>
+  <button class="modal-close" id="modalClose">Tutup</button>
+ </div>
+</div>
+
+<!-- 4. AREA GAMEPLAY -->
+<div id="viewport">
+ <div class="bg-glow-left"></div>
+ <div class="bg-glow-right"></div>
+
+ <!-- PANEL KIRI -->
+ <aside class="side-panel side-left">
+  <div class="deco-card">
+   <div class="deco-title">
+    <span>✨ Kondisi Ervilia</span>
+    <div class="eq-bars" id="eqVisual"><span></span><span></span><span></span></div>
+   </div>
+
+   <div class="stat-row">
+    <div class="stat-label"><span>⚡ Energi</span><span id="valEnergy">85%</span></div>
+    <div class="stat-track"><div class="stat-fill fill-energy" id="barEnergy" style="width:85%"></div></div>
+   </div>
+
+   <div class="stat-row">
+    <div class="stat-label"><span>🍱 Kenyang</span><span id="valHunger">70%</span></div>
+    <div class="stat-track"><div class="stat-fill fill-hunger" id="barHunger" style="width:70%"></div></div>
+   </div>
+
+   <div class="stat-row">
+    <div class="stat-label"><span>🚿 Segar</span><span id="valHygiene">80%</span></div>
+    <div class="stat-track"><div class="stat-fill fill-hygiene" id="barHygiene" style="width:80%"></div></div>
+   </div>
+
+   <div class="stat-row">
+    <div class="stat-label"><span>💖 Mood</span><span id="valMood">90%</span></div>
+    <div class="stat-track"><div class="stat-fill fill-mood" id="barMood" style="width:90%"></div></div>
+   </div>
+  </div>
+
+  <div class="deco-card">
+   <div class="deco-title" style="color:#f472b6;"><span>🌸 Lokasi Karakter</span></div>
+   <div class="char-status-line" id="erviliaLocLabel"><b>Ervilia:</b> Rumah Ervilia</div>
+   <div class="char-status-line" id="ubyLocLabel"><b>Uby:</b> Rumah Uby</div>
+  </div>
+ </aside>
+
+ <!-- CANVAS UTAMA -->
+ <canvas id="game" width="800" height="533"></canvas>
+
+ <!-- PANEL KANAN -->
+ <aside class="side-panel side-right">
+  <div class="deco-card">
+   <div class="deco-title"><span>📅 Jadwal Harian</span></div>
+   <div class="sched-item" id="schedCook"><span>🍳 Masak</span><span>05:00</span></div>
+   <div class="sched-item" id="schedBath1"><span>🚿 Mandi</span><span>07:00</span></div>
+   <div class="sched-item" id="schedWork"><span>💻 Kerja (Sen)</span><span>08:00</span></div>
+   <div class="sched-item" id="schedVisitUby"><span>🏡 Uby Main</span><span>10:00</span></div>
+   <div class="sched-item" id="schedBath2"><span>🚿 Mandi</span><span>15:00</span></div>
+   <div class="sched-item" id="schedVisitErv"><span>🏠 Ervilia Main</span><span>16:00</span></div>
+   <div class="sched-item" id="schedSleep"><span>😴 Tidur</span><span>22:00</span></div>
+  </div>
+
+  <div class="deco-card">
+   <div class="deco-title"><span>💡 Kunjungan</span></div>
+   <div style="font-size:10px; color:#cbd5e1; line-height:1.35;">
+    <b>10:00</b> Uby main ke rumah Ervilia.<br>
+    <b>16:00</b> Ervilia main ke rumah Uby.<br>
+    <b>Catatan!!</b> Game ini masih versi test.
+   </div>
+   <div class="brand-footer-tag" style="margin-top:6px;">YumeID™ Engine</div>
+  </div>
+ </aside>
+</div>
+
+<!-- HUD ATAS -->
+<div class="hud-top">
+ <div class="hud-left-group">
+  <div class="clock-badge" id="clockDisplay">🌅 Senin, 04:45</div>
+  <div class="map-switch-group">
+   <button class="map-tab active" id="tabMapErvilia">🏠 Rumah Ervilia</button>
+   <button class="map-tab uby" id="tabMapUby">🏡 Rumah Uby</button>
+  </div>
+  <div class="online-pill hidden" id="onlineBadge">🌐 Offline</div>
+ </div>
+ <div class="top-actions">
+  <button class="btn btn-auto on" id="toggleAuto">🤖 Jadwal: ON</button>
+  <button class="btn" id="btnPcErvilia">💻 PC Ervilia</button>
+  <button class="btn" id="btnPcUby">💻 PC Uby</button>
+  <button class="btn icon-btn" id="btnIngameSetting" title="Pengaturan Volume">⚙</button>
+  <button class="btn icon-btn" id="btnBackMenu" title="Menu Utama">🏠</button>
+  <button class="btn icon-btn" id="fullscreen" title="Fullscreen">⛶</button>
+ </div>
+</div>
+
+<!-- BAR KUNJUNGAN BEBAS (MUNCUL SAAT JADWAL: OFF ATAU MODE ONLINE) -->
+<div class="manual-visit-bar hidden" id="manualVisitBar">
+ <span class="visit-bar-label" id="visitBarTitle">🚶 Kunjungan Bebas:</span>
+ <button class="btn visit-btn uby" id="btnVisitUbyToErv">🏡 Uby ➔ R. Ervilia</button>
+ <button class="btn visit-btn erv" id="btnVisitErvToUby">🏠 Ervilia ➔ R. Uby</button>
+ <button class="btn visit-btn both" id="btnGatherHere">💞 Kumpul di Sini</button>
+ <button class="btn visit-btn home" id="btnReturnAllHome">↩️ Pulang</button>
+ <span class="visit-divider" id="pickDivider">|</span>
+ <button class="btn char-pick-btn active" id="btnPickErv">👩 Ervilia</button>
+ <button class="btn char-pick-btn" id="btnPickUby">👧 Uby</button>
+</div>
+
+<!-- BAR AKSI INTERAKSI MANUAL (KHUSUS MODE ONLINE) -->
+<div class="online-action-bar hidden" id="onlineActionBar">
+ <span class="action-bar-label">⚡ Interaksi:</span>
+ <button class="btn act-btn" data-act="COOK">🍳 Masak</button>
+ <button class="btn act-btn" data-act="EAT">🍱 Makan</button>
+ <button class="btn act-btn" data-act="BATH">🚿 Mandi</button>
+ <button class="btn act-btn" data-act="WORK">💻 Main PC</button>
+ <button class="btn act-btn" data-act="SLEEP">😴 Tidur</button>
+ <button class="btn act-btn stop" data-act="IDLE">🛑 Santai</button>
+</div>
+
+<!-- VIRTUAL PC CHAT -->
+<div class="pc-backdrop" id="pcBackdrop">
+ <section class="pc-window" role="dialog" aria-modal="true" aria-label="Virtual PC">
+  <header class="pc-header">
+   <div><div class="pc-brand">M-Mail <span>● ONLINE</span></div><div class="pc-subtitle" id="pcOwnerLabel">Virtual PC Ervilia</div></div>
+   <button class="pc-close" id="pcClose" aria-label="Tutup">✕</button>
+  </header>
+  <div class="pc-toolbar">
+   <span>💬 Pesan pribadi</span><span id="pcStatus">Koneksi lokal</span>
+  </div>
+  <div class="pc-contact"><span class="pc-avatar">💗</span><div><b id="pcContactName">Uby</b><small>Obrolan antar karakter</small></div><i>●</i></div>
+  <div class="pc-messages" id="pcMessages" aria-live="polite"></div>
+  <form class="pc-compose" id="pcCompose">
+   <input id="pcMessageInput" maxlength="180" autocomplete="off" placeholder="Tulis pesan..." aria-label="Tulis pesan">
+   <button type="submit">Kirim ➤</button>
+  </form>
+  <footer class="pc-footer"><span>🔒 Simulasi chat dalam game</span><button type="button" id="pcRandomBtn">✨ Chat random</button></footer>
+ </section>
+</div>
+
+<!-- HUD BAWAH -->
+<div class="room-bar" id="roomBar"></div>
+
+<!-- PENGAMAN SPLASH SCREEN ANTI-STUCK -->
+<script>
+(function() {
+ const s1 = document.getElementById("splash1");
+ const s2 = document.getElementById("splash2");
+ let moved = false;
+
+ function goSplash2() {
+  if (moved) return;
+  moved = true;
+  s1.classList.add("hidden");
+  s2.classList.remove("hidden");
+ }
+
+ setTimeout(goSplash2, 2000);
+ s1.addEventListener("pointerdown", goSplash2);
+})();
+</script>
+
+<!-- PEERJS & LOADER MODUL JS ANTI-GAGAL (AUTO-RETRY) -->
+<script>
+(function() {
+ const scripts = [
+  { src: "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js", optional: true },
+  { src: "js/audio.js" },
+  { src: "js/maps.js" },
+  { src: "js/chars/ervilia.js" },
+  { src: "js/chars/uby.js" },
+  { src: "js/online.js", optional: true },
+  { src: "js/main.js" }
+ ];
+
+ function loadScriptSequential(index) {
+  if (index >= scripts.length) return;
+  const item = scripts[index];
+  let attempts = 0;
+
+  function tryLoad() {
+   attempts++;
+   const s = document.createElement("script");
+   // Tambahkan cache-buster ringan hanya saat retry
+   s.src = attempts === 1 ? item.src : `${item.src}?retry=${attempts}&t=${Date.now()}`;
+   s.async = false;
+
+   s.onload = () => loadScriptSequential(index + 1);
+   s.onerror = () => {
+    s.remove();
+    if (attempts < 3) {
+     setTimeout(tryLoad, 250 * attempts);
+    } else if (item.optional) {
+     console.warn("Modul opsional dilewati:", item.src);
+     loadScriptSequential(index + 1);
+    } else {
+     console.error("Gagal memuat modul wajib setelah 3x percobaan:", item.src);
+    }
+   };
+
+   document.body.appendChild(s);
+  }
+
+  tryLoad();
+ }
+
+ loadScriptSequential(0);
+})();
+</script>
+</body>
+</html>
